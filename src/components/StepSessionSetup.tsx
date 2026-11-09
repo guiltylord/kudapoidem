@@ -76,30 +76,9 @@ export const StepSessionSetup: React.FC<StepSessionSetupProps> = ({
             <span>Параметры сессии</span>
           </div>
 
-          {/* City Toggle */}
-          <div className="flex bg-slate-900/90 p-1 rounded-xl border border-slate-700/80 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => setCity('msk')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                city === 'msk'
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Москва 🏙️
-            </button>
-            <button
-              type="button"
-              onClick={() => setCity('spb')}
-              className={`px-2.5 py-1 rounded-lg transition-all ${
-                city === 'spb'
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              СПб 🏛️
-            </button>
+          {/* City Badge (Fixed to Moscow for MVP) */}
+          <div className="flex items-center gap-1.5 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-700/80 text-xs font-semibold text-cyan-300">
+            <span>📍 Москва</span>
           </div>
         </div>
 

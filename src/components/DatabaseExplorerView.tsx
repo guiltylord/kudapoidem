@@ -4,14 +4,14 @@ import { Venue } from '../types';
 import { MapPin, Star, Volume2, Lightbulb, Armchair, Music, ExternalLink, Search } from 'lucide-react';
 
 export const DatabaseExplorerView: React.FC = () => {
-  const [selectedCity, setSelectedCity] = useState<'all' | 'msk' | 'spb'>('all');
+  const [selectedCity] = useState<'msk'>('msk');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = ['all', 'Крафт', 'Вино', 'Необистро', 'Спешелти', 'Стритфуд', 'Паназия'];
 
   const filteredVenues = MOCK_VENUES.filter((venue) => {
-    if (selectedCity !== 'all' && venue.city !== selectedCity) return false;
+    if (venue.city !== 'msk') return false;
     if (selectedCategory !== 'all') {
       const allText = `${venue.category} ${venue.cuisine} ${venue.vibeTags.join(' ')}`.toLowerCase();
       if (!allText.includes(selectedCategory.toLowerCase())) return false;
@@ -50,43 +50,6 @@ export const DatabaseExplorerView: React.FC = () => {
             placeholder="Поиск по названию, метро, кухне или вайбу..."
             className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700/80 rounded-2xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
           />
-        </div>
-
-        {/* City Filter Pills */}
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setSelectedCity('all')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              selectedCity === 'all'
-                ? 'bg-cyan-500 text-slate-950 font-bold'
-                : 'bg-slate-900 border border-slate-800 text-slate-400'
-            }`}
-          >
-            Все города
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedCity('msk')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              selectedCity === 'msk'
-                ? 'bg-cyan-500 text-slate-950 font-bold'
-                : 'bg-slate-900 border border-slate-800 text-slate-400'
-            }`}
-          >
-            Москва 🏙️
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedCity('spb')}
-            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-              selectedCity === 'spb'
-                ? 'bg-cyan-500 text-slate-950 font-bold'
-                : 'bg-slate-900 border border-slate-800 text-slate-400'
-            }`}
-          >
-            СПб 🏛️
-          </button>
         </div>
       </div>
 
