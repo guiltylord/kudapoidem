@@ -1,18 +1,149 @@
 <!doctype html>
-<html lang="ru" class="dark">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#0c111d" />
-    <meta name="description" content="КудаПойдем (VibeMatch) — Социальный AI-сервис для быстрого выбора мест отдыха с друзьями на основе вайба" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090d16" />
+    <meta name="description" content="КудаПойдем — быстрый подбор места для компании в Москве за 15 секунд без 40 минут споров в чате" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>КудаПойдем | VibeMatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>КудаПойдем — Выбор места без споров</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="./style.css" />
   </head>
-  <body class="bg-[#080d1a] text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200 min-h-screen overflow-x-hidden">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="topbar-left">
+          <button type="button" id="btn-back" class="btn-back hidden" aria-label="Назад">
+            <span class="back-arrow">‹</span>
+            <span id="btn-back-label">Назад</span>
+          </button>
+          <div id="brand-mark" class="brand">
+            <span class="brand-icon" aria-hidden="true">✨</span>
+            <div class="brand-text">
+              <div class="brand-title">
+                <span>КудаПойдем</span>
+                <span class="city-badge">Москва</span>
+              </div>
+              <div class="brand-sub">Выбор места для банды за 15 сек</div>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="btn-reset-top" class="btn-ghost-sm">Сбросить</button>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <!-- ЭКРАН 1: НАСТРОЙКА ОРГАНИЗАТОРОМ -->
+      <section id="view-setup" class="view active" aria-label="Быстрый подбор места">
+        <p class="hero-lead">
+          Натыкай ограничения из переписки — сразу получишь <strong>Топ-3 места</strong>, за которые друзьям легко проголосовать в чате.
+        </p>
+
+        <div class="block">
+          <div class="block-head">
+            <h2 class="block-title">1. Когда идем?</h2>
+          </div>
+          <div id="days-group" class="pills-row"></div>
+        </div>
+
+        <div class="block">
+          <div class="block-head">
+            <h2 class="block-title">2. Какой вайб сегодня?</h2>
+            <span class="block-hint">1 тап</span>
+          </div>
+          <div id="vibes-grid" class="vibes-grid"></div>
+        </div>
+
+        <div class="block">
+          <div class="block-head">
+            <h2 class="block-title">3. Бюджет</h2>
+            <span class="block-hint">По самому экономному в банде</span>
+          </div>
+          <div id="budget-grid" class="budget-grid"></div>
+        </div>
+
+        <div class="block">
+          <div class="block-head">
+            <h2 class="block-title">4. Стоп-факторы и табу</h2>
+            <span class="block-hint">Если хотя бы один друг против</span>
+          </div>
+          <div id="taboos-group" class="pills-wrap"></div>
+        </div>
+
+        <div class="block">
+          <div class="block-head">
+            <h2 class="block-title">5. Деталь из чата</h2>
+            <span class="block-hint">Необязательно</span>
+          </div>
+          <div class="search-box">
+            <input
+              type="text"
+              id="custom-query"
+              class="text-input"
+              placeholder="Например: Китай-город, рамен, двор, пицца..."
+              autocomplete="off"
+            />
+            <button type="button" id="btn-clear-query" class="clear-input hidden" aria-label="Очистить">✕</button>
+          </div>
+          <div id="quick-keywords" class="quick-tags"></div>
+        </div>
+      </section>
+
+      <!-- ЭКРАН 2: ТОП-3 РЕЗУЛЬТАТА И ГОЛОСОВАНИЕ В ЧАТ -->
+      <section id="view-results" class="view hidden" aria-label="Топ-3 места">
+        <div class="results-header">
+          <h1 class="page-title">Топ-3 для вашей банды</h1>
+          <div id="active-summary" class="summary-strip" role="button" tabindex="0" title="Нажми, чтобы изменить параметры"></div>
+          <p id="filter-stats" class="filter-stats"></p>
+        </div>
+
+        <div class="chat-poll-banner">
+          <div class="chat-poll-copy">
+            <strong>Чтобы не спорить 40 минут:</strong>
+            <span>закинь Топ-3 в чат — друзья выберут цифру 1, 2 или 3</span>
+          </div>
+          <div class="chat-poll-actions">
+            <button type="button" id="btn-copy-top3" class="btn-primary btn-poll-copy">
+              📋 Скопировать Топ-3 в чат
+            </button>
+            <a id="btn-tg-share-top3" href="#" target="_blank" rel="noopener noreferrer" class="btn-tg">
+              ✈️ В Telegram
+            </a>
+          </div>
+        </div>
+
+        <div id="results-list" class="results-list"></div>
+
+        <div class="results-footer">
+          <button type="button" id="btn-restore-hidden" class="btn-ghost-sm hidden"></button>
+          <button type="button" id="btn-edit-filters" class="btn-secondary full-width">
+            ← Изменить фильтры
+          </button>
+        </div>
+      </section>
+
+      <!-- ЭКРАН 3: ФИНАЛ — МАРШРУТ, БРОНЬ, ПРИГЛАШЕНИЕ -->
+      <section id="view-winner" class="view hidden" aria-label="Место выбрано">
+        <div id="winner-card" class="winner-wrap"></div>
+      </section>
+    </main>
+
+    <!-- ЛИПКАЯ ГЛАВНАЯ КНОПКА ДЛЯ ЭКРАНА НАСТРОЙКИ -->
+    <div id="sticky-cta-bar" class="sticky-bar">
+      <div class="container">
+        <button type="button" id="btn-find-places" class="btn-primary btn-cta">
+          Подобрать Топ-3 →
+        </button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="./venues.js"></script>
+    <script src="./app.js"></script>
   </body>
 </html>
